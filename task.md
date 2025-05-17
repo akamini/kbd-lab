@@ -2,9 +2,9 @@
 
 ## 1. プロジェクト初期設定・環境構築
 
-- [ ] Next.js (v15) プロジェクト作成
-- [ ] Biome (リンター/フォーマッター) 導入と設定
-- [ ] shadcn/ui 導入と設定
+- [ x ] Next.js (v15) プロジェクト作成
+- [x] Biome (リンター/フォーマッター) 導入と設定
+- [x] shadcn/ui 導入と設定
 - [ ] Drizzle ORM 導入と設定
 - [ ] Cloudflare D1 の準備と接続設定
 - [ ] BetterAuth 導入と設定 (Google ログイン)
