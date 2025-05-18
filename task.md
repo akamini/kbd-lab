@@ -13,8 +13,8 @@
   - [x] API キーの取得と環境変数への設定
 - [x] Supabase JavaScript Client 導入
 - [ ] Supabase Auth 設定
-  - [ ] Google ログイン設定
-  - [ ] メール/パスワード認証設定
+  - [x] Github 認証設定
+  - [ ] Google ログイン設定（将来実装）
 - [x] Supabase Storage 設定 (画像アップロード用)
 - [ ] Vercel プロジェクト設定と初期デプロイ確認
 
@@ -38,8 +38,8 @@
 ## 3. 認証機能の実装
 
 - [ ] Supabase Auth を用いたログイン機能の実装
-  - [ ] Google ログイン実装
-  - [ ] メール/パスワード認証実装
+  - [ ] Github ログイン実装
+  - [ ] Google ログイン実装（将来実装）
   - [ ] ログインフォーム UI 作成
 - [ ] ログイン状態の管理
   - [ ] Supabase Auth ヘルパー関数の実装
