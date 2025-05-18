@@ -6,9 +6,7 @@ export default function Page() {
   return (
     <div className='flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-gradient-to-br from-gray-900 to-black relative'>
       <div className='w-full max-w-sm z-10'>
-        <div className='mb-8'>
-          <KbdLabLogo />
-        </div>
+        <div className='mb-8'></div>
         <LoginForm />
       </div>
       <div className='absolute inset-0 w-full h-full overflow-hidden'>
