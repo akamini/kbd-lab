@@ -8,14 +8,14 @@
 - [x] テストフレームワーク導入
   - [x] Vitest 導入と設定
   - [x] Playwright 導入と設定
-- [ ] Supabase プロジェクト作成
-  - [ ] プロジェクト設定 (リージョン選択、環境変数設定)
-  - [ ] API キーの取得と環境変数への設定
-- [ ] Supabase JavaScript Client 導入
+- [x] Supabase プロジェクト作成
+  - [x] プロジェクト設定 (リージョン選択、環境変数設定)
+  - [x] API キーの取得と環境変数への設定
+- [x] Supabase JavaScript Client 導入
 - [ ] Supabase Auth 設定
   - [ ] Google ログイン設定
   - [ ] メール/パスワード認証設定
-- [ ] Supabase Storage 設定 (画像アップロード用)
+- [x] Supabase Storage 設定 (画像アップロード用)
 - [ ] Vercel プロジェクト設定と初期デプロイ確認
 
 ## 2. データベース設計とマイグレーション
