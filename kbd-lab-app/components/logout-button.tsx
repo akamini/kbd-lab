@@ -16,7 +16,7 @@ export function LogoutButton() {
   return (
     <Button
       onClick={logout}
-      className='bg-purple-600 hover:bg-purple-700 text-white transition-all duration-300 ease-in-out transform hover:scale-105'
+      className='bg-[#61dafb] hover:bg-[#50c9ea] text-gray transition-all duration-300 ease-in-out transform hover:scale-105'
     >
       ログアウト
     </Button>

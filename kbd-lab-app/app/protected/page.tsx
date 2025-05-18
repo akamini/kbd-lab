@@ -15,11 +15,11 @@ export default async function ProtectedPage() {
   return (
     <div className='relative flex h-svh w-full items-center justify-center bg-gradient-to-br from-gray-900 to-black'>
       <AnimatedBackground />
-      <div className='z-10 flex flex-col items-center gap-4 rounded-lg backdrop-blur-sm bg-black/30 p-8 border border-purple-500/20 shadow-lg shadow-purple-500/20'>
-        <h1 className='text-2xl font-bold text-purple-300'>ダッシュボード</h1>
+      <div className='z-10 flex flex-col items-center gap-4 rounded-lg backdrop-blur-sm bg-black/30 p-8 border border-[#61dafb]/20 shadow-lg shadow-[#61dafb]/20'>
+        <h1 className='text-2xl font-bold text-[#61dafb]'>ダッシュボード</h1>
         <p className='text-slate-300'>
           こんにちは{' '}
-          <span className='font-semibold text-purple-300'>
+          <span className='font-semibold text-[#61dafb]'>
             {data.user.email}
           </span>{' '}
           さん

@@ -42,18 +42,20 @@ export function LoginForm({
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card className="backdrop-blur-sm bg-black/30 border-slate-700 shadow-lg shadow-purple-500/20">
+      <Card className='backdrop-blur-sm bg-black/30 border-slate-700 shadow-lg shadow-[#61dafb]/20'>
         <CardHeader>
-          <CardTitle className='text-2xl text-purple-300'>ようこそ！</CardTitle>
-          <CardDescription className="text-slate-300">続けるにはアカウントにサインインしてください</CardDescription>
+          <CardTitle className='text-2xl text-[#61dafb]'>ようこそ！</CardTitle>
+          <CardDescription className='text-slate-300'>
+            続けるにはアカウントにサインインしてください
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSocialLogin}>
             <div className='flex flex-col gap-6'>
               {error && <p className='text-sm text-red-400'>{error}</p>}
-              <Button 
-                type='submit' 
-                className='w-full bg-purple-600 hover:bg-purple-700 text-white' 
+              <Button
+                type='submit'
+                className='w-full bg-[#61dafb] hover:bg-[#50c9ea] text-gray transition-all duration-300 ease-in-out transform hover:scale-105'
                 disabled={isLoading}
               >
                 {isLoading ? 'ログイン中...' : 'Githubで続ける'}
