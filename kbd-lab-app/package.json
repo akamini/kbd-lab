@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "test": "vitest",
+    "vitest": "vitest",
+    "playwright": "playwright test",
     "lint": "next lint",
     "fix": "biome check --fix ."
   },
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@playwright/test": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.3.0",
