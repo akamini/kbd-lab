@@ -3,22 +3,37 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LogoutButton } from '@/components/logout-button';
+import { LoginModal } from '@/components/login-modal';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 
 export function Header() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+  const supabase = createClient();
+
   useEffect(() => {
     const fetchUser = async () => {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setUser(session?.user || null);
       setLoading(false);
     };
-    
+
     fetchUser();
+
+    // ユーザー認証状態の変更を監視
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -109,12 +124,7 @@ export function Header() {
               <LogoutButton />
             </div>
           ) : (
-            <Button
-              asChild
-              className='bg-[#61dafb] hover:bg-[#4db8e0] text-white'
-            >
-              <Link href='/auth/login'>ログイン / 登録</Link>
-            </Button>
+            <LoginModal />
           )}
           <button className='md:hidden text-gray-600 hover:text-[#61dafb]'>
             <svg
