@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 CREATE TABLE IF NOT EXISTS public.categories (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
-  slug TEXT NOT NULL UNIQUE,
   description TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
@@ -27,7 +26,6 @@ CREATE TABLE IF NOT EXISTS public.categories (
 CREATE TABLE IF NOT EXISTS public.tags (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
-  slug TEXT NOT NULL UNIQUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
@@ -123,7 +121,10 @@ CREATE POLICY "タグは誰でも閲覧可能" ON public.tags
 
 -- 認証済みユーザーは作成可能（管理者でなくても）
 CREATE POLICY "認証済みユーザーはタグを作成可能" ON public.tags
-  FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+  FOR INSERT WITH CHECK (
+    auth.uid() IS NOT NULL AND
+    auth.role() = 'authenticated'
+  );
 
 -- 管理者のみ編集・削除可能
 CREATE POLICY "タグは管理者のみ編集可能" ON public.tags
@@ -248,22 +249,22 @@ CREATE POLICY "自分のフォルダの画像のみ削除可能" ON storage.obje
   );
 
 -- カテゴリの初期データ
-INSERT INTO public.categories (name, slug, description) VALUES
-('キーボード', 'keyboards', '自作キーボードの作品'),
-('キーキャップ', 'keycaps', 'カスタムキーキャップの作品'),
-('小物', 'accessories', 'デスク周りの小物'),
-('工具', 'tools', 'キーボード製作に役立つ工具')
+INSERT INTO public.categories (name, description) VALUES
+('キーボード', '自作キーボードの作品'),
+('キーキャップ', 'カスタムキーキャップの作品'),
+('小物', 'デスク周りの小物'),
+('工具', 'キーボード製作に役立つ工具')
 ON CONFLICT (name) DO NOTHING;
 
 -- よく使われるタグの初期データ
-INSERT INTO public.tags (name, slug) VALUES
-('自作キット', 'diy-kit'),
-('3Dプリント', '3d-printed'),
-('無線', 'wireless'),
-('有線', 'wired'),
-('分割型', 'split'),
-('フルサイズ', 'full-size'),
-('テンキーレス', 'tenkeyless'),
-('60%', '60-percent'),
-('40%', '40-percent')
+INSERT INTO public.tags (name) VALUES
+('自作キット'),
+('3Dプリント'),
+('無線'),
+('有線'),
+('分割型'),
+('フルサイズ'),
+('テンキーレス'),
+('60%'),
+('40%')
 ON CONFLICT (name) DO NOTHING;

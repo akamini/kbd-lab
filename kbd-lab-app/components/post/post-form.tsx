@@ -22,13 +22,11 @@ import { toast } from 'sonner';
 interface Category {
   id: number;
   name: string;
-  slug: string;
 }
 
 interface Tag {
   id: number;
   name: string;
-  slug: string;
 }
 
 interface PostFormProps {
@@ -123,23 +121,38 @@ export function PostForm({ user }: PostFormProps) {
   const createNewTag = async () => {
     if (!newTag.trim()) return;
 
-    const slug = newTag.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-    const { data, error } = await supabase
-      .from('tags')
-      .insert({ name: newTag.trim(), slug })
-      .select()
-      .single();
-
-    if (error) {
-      toast.error('タグの作成に失敗しました');
+    // 既存のタグ名と重複チェック
+    const existingTag = tags.find(
+      (tag) => tag.name.toLowerCase() === newTag.trim().toLowerCase()
+    );
+    if (existingTag) {
+      addTag(existingTag);
+      setNewTag('');
       return;
     }
 
-    const newTagData = data as Tag;
-    setTags((prev) => [...prev, newTagData]);
-    addTag(newTagData);
-    setNewTag('');
+    try {
+      const { data, error } = await supabase
+        .from('tags')
+        .insert({ name: newTag.trim() })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('タグ作成エラー:', error);
+        toast.error('タグの作成に失敗しました');
+        return;
+      }
+
+      const newTagData = data as Tag;
+      setTags((prev) => [...prev, newTagData]);
+      addTag(newTagData);
+      setNewTag('');
+      toast.success(`タグ「${newTagData.name}」を作成しました`);
+    } catch (error) {
+      console.error('タグ作成エラー:', error);
+      toast.error('タグの作成に失敗しました');
+    }
   };
 
   const uploadImages = async (): Promise<string[]> => {

@@ -46,32 +46,34 @@ export function Header() {
               <span className='text-[#61dafb]'>KBD</span> Lab
             </span>
           </Link>
-          <nav className='hidden md:flex items-center space-x-6'>
-            <Link
-              href='/products/keyboards'
-              className='text-gray-600 hover:text-[#61dafb]'
-            >
-              キーボード
-            </Link>
-            <Link
-              href='/products/keycaps'
-              className='text-gray-600 hover:text-[#61dafb]'
-            >
-              キーキャップ
-            </Link>
-            <Link
-              href='/products/accessories'
-              className='text-gray-600 hover:text-[#61dafb]'
-            >
-              小物
-            </Link>
-            <Link
-              href='/products/tools'
-              className='text-gray-600 hover:text-[#61dafb]'
-            >
-              工具
-            </Link>
-          </nav>
+          {!user && (
+            <nav className='hidden md:flex items-center space-x-6'>
+              <Link
+                href='/products/keyboards'
+                className='text-gray-600 hover:text-[#61dafb]'
+              >
+                キーボード
+              </Link>
+              <Link
+                href='/products/keycaps'
+                className='text-gray-600 hover:text-[#61dafb]'
+              >
+                キーキャップ
+              </Link>
+              <Link
+                href='/products/accessories'
+                className='text-gray-600 hover:text-[#61dafb]'
+              >
+                小物
+              </Link>
+              <Link
+                href='/products/tools'
+                className='text-gray-600 hover:text-[#61dafb]'
+              >
+                工具
+              </Link>
+            </nav>
+          )}
         </div>
         <div className='flex items-center space-x-4'>
           <div className='relative hidden md:block'>
@@ -101,32 +103,6 @@ export function Header() {
             <div className='w-20 h-8 bg-gray-200 animate-pulse rounded'></div>
           ) : (
             <>
-              <div className='hidden md:flex items-center space-x-6'>
-                <Link
-                  href='/products/keyboards'
-                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
-                >
-                  キーボード
-                </Link>
-                <Link
-                  href='/products/keycaps'
-                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
-                >
-                  キーキャップ
-                </Link>
-                <Link
-                  href='/products/accessories'
-                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
-                >
-                  小物
-                </Link>
-                <Link
-                  href='/products/tools'
-                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
-                >
-                  工具
-                </Link>
-              </div>
               {!user ? (
                 <LoginModal />
               ) : (
@@ -135,6 +111,11 @@ export function Header() {
                     <Button variant='outline' size='sm' className='flex items-center gap-2'>
                       <Plus className='h-4 w-4' />
                       投稿
+                    </Button>
+                  </Link>
+                  <Link href='/mypage'>
+                    <Button variant='outline' size='sm'>
+                      マイページ
                     </Button>
                   </Link>
                   <span className='text-sm text-gray-600'>
