@@ -6,6 +6,7 @@ import { LogoutButton } from '@/components/logout-button';
 import { LoginModal } from '@/components/login-modal';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
 
 export function Header() {
   const [user, setUser] = useState<any>(null);
@@ -96,35 +97,53 @@ export function Header() {
               </svg>
             </button>
           </div>
-          {user ? (
-            <div className='flex items-center space-x-4'>
-              <Button
-                asChild
-                variant='ghost'
-                className='text-gray-600 hover:text-[#61dafb]'
-              >
-                <Link href='/profile'>
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='h-5 w-5 mr-1'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-                    />
-                  </svg>
-                  マイページ
-                </Link>
-              </Button>
-              <LogoutButton />
-            </div>
+          {loading ? (
+            <div className='w-20 h-8 bg-gray-200 animate-pulse rounded'></div>
           ) : (
-            <LoginModal />
+            <>
+              <div className='hidden md:flex items-center space-x-6'>
+                <Link
+                  href='/products/keyboards'
+                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
+                >
+                  キーボード
+                </Link>
+                <Link
+                  href='/products/keycaps'
+                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
+                >
+                  キーキャップ
+                </Link>
+                <Link
+                  href='/products/accessories'
+                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
+                >
+                  小物
+                </Link>
+                <Link
+                  href='/products/tools'
+                  className='text-gray-600 hover:text-[#61dafb] transition-colors'
+                >
+                  工具
+                </Link>
+              </div>
+              {!user ? (
+                <LoginModal />
+              ) : (
+                <div className='flex items-center space-x-4'>
+                  <Link href='/post'>
+                    <Button variant='outline' size='sm' className='flex items-center gap-2'>
+                      <Plus className='h-4 w-4' />
+                      投稿
+                    </Button>
+                  </Link>
+                  <span className='text-sm text-gray-600'>
+                    {user.user_metadata?.user_name || user.email}
+                  </span>
+                  <LogoutButton />
+                </div>
+              )}
+            </>
           )}
           <button className='md:hidden text-gray-600 hover:text-[#61dafb]'>
             <svg
