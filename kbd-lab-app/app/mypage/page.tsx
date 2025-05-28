@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, ExternalLink, Github } from 'lucide-react';
+import { Heart, ExternalLink, Github, Plus, Edit } from 'lucide-react';
 import Link from 'next/link';
 
 interface Product {
@@ -49,10 +49,11 @@ export default function MyPage() {
       }
 
       setUser(session.user);
-      await Promise.all([
+      const [myProductsData] = await Promise.all([
         fetchMyProducts(session.user.id),
         fetchFavoriteProducts(session.user.id),
       ]);
+      setMyProducts(myProductsData);
       setLoading(false);
     };
 
@@ -67,19 +68,20 @@ export default function MyPage() {
         *,
         categories(name),
         product_tags(
-          tags(name)
+          tags(id, name)
         )
       `
       )
       .eq('user_id', userId)
+      .is('deleted_at', null)
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('投稿した商品の取得に失敗しました:', error);
-      return;
+      console.error('商品の取得に失敗しました:', error);
+      return [];
     }
 
-    setMyProducts(data || []);
+    return data || [];
   };
 
   const fetchFavoriteProducts = async (userId: string) => {
@@ -130,11 +132,13 @@ export default function MyPage() {
   const ProductCard = ({
     product,
     showRemoveFavorite = false,
+    showEdit = false,
   }: {
     product: Product;
     showRemoveFavorite?: boolean;
+    showEdit?: boolean;
   }) => (
-    <Card className='overflow-hidden hover:shadow-lg transition-shadow'>
+    <Card className='overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col'>
       <div className='aspect-video relative bg-gray-100'>
         {product.images && product.images.length > 0 ? (
           <img
@@ -148,7 +152,7 @@ export default function MyPage() {
           </div>
         )}
       </div>
-      <CardContent className='p-4'>
+      <CardContent className='p-4 flex flex-col flex-1'>
         <div className='flex items-start justify-between mb-2'>
           <h3 className='font-semibold text-lg line-clamp-1'>
             {product.title}
@@ -164,7 +168,7 @@ export default function MyPage() {
             </Button>
           )}
         </div>
-        <p className='text-gray-600 text-sm mb-3 line-clamp-2'>
+        <p className='text-gray-600 text-sm mb-3 line-clamp-2 flex-1'>
           {product.description}
         </p>
 
@@ -182,7 +186,7 @@ export default function MyPage() {
           )}
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 mb-3'>
           {product.github_url && (
             <Link
               href={product.github_url}
@@ -217,8 +221,23 @@ export default function MyPage() {
           )}
         </div>
 
-        <div className='text-xs text-gray-500 mt-3'>
-          {new Date(product.created_at).toLocaleDateString('ja-JP')}
+        <div className='flex items-center justify-between mt-auto'>
+          <div className='text-xs text-gray-500'>
+            {new Date(product.created_at).toLocaleDateString('ja-JP')}
+          </div>
+          {showEdit && (
+            <Button
+              size='sm'
+              variant='ghost'
+              asChild
+              className='text-[#61dafb] hover:text-[#4db8e0]'
+            >
+              <Link href={`/mypage/edit/${product.id}`}>
+                <Edit className='h-4 w-4 mr-1' />
+                編集
+              </Link>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -285,7 +304,7 @@ export default function MyPage() {
           ) : (
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
               {myProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} showEdit />
               ))}
             </div>
           )}

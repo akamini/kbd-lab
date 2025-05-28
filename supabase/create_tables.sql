@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   shop_url TEXT,
   images TEXT[] DEFAULT '{}'::TEXT[],
   view_count INTEGER DEFAULT 0,
+  deleted_at TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
@@ -68,6 +69,54 @@ CREATE INDEX IF NOT EXISTS idx_favorites_user_id ON public.favorites(user_id);
 CREATE INDEX IF NOT EXISTS idx_favorites_product_id ON public.favorites(product_id);
 CREATE INDEX IF NOT EXISTS idx_product_tags_product_id ON public.product_tags(product_id);
 CREATE INDEX IF NOT EXISTS idx_product_tags_tag_id ON public.product_tags(tag_id);
+
+-- 論理削除用トリガー関数の作成	
+CREATE OR REPLACE FUNCTION soft_delete()	
+RETURNS TRIGGER	
+SECURITY DEFINER	
+LANGUAGE plpgsql	
+AS $$	
+DECLARE	
+has_id_column BOOLEAN;	
+has_deleted_at_column BOOLEAN;	
+BEGIN	
+-- テーブルにidカラムがあるか確認	
+SELECT EXISTS (	
+SELECT 1	
+FROM information_schema.columns	
+WHERE table_schema = TG_TABLE_SCHEMA	
+AND table_name = TG_TABLE_NAME	
+AND column_name = 'id'	
+) INTO has_id_column;	
+-- テーブルにdeleted_atカラムがあるか確認	
+SELECT EXISTS (	
+SELECT 1	
+FROM information_schema.columns	
+WHERE table_schema = TG_TABLE_SCHEMA	
+AND table_name = TG_TABLE_NAME	
+AND column_name = 'deleted_at'	
+) INTO has_deleted_at_column;	
+-- deleted_atカラムがある場合のみ論理削除を実行	
+IF has_deleted_at_column THEN	
+IF has_id_column THEN	
+-- idカラムを使用	
+EXECUTE format('UPDATE %I.%I SET deleted_at = now() WHERE id = $1', TG_TABLE_SCHEMA, TG_TABLE_NAME)	
+USING OLD.id;	
+ELSE	
+-- ctidを使用（安全性に注意）	
+EXECUTE format('UPDATE %I.%I SET deleted_at = now() WHERE ctid = $1', TG_TABLE_SCHEMA, TG_TABLE_NAME)	
+USING OLD.ctid;	
+END IF;	
+-- DELETE処理をキャンセル（論理削除に置き換え）	
+RETURN NULL;	
+ELSE	
+-- deleted_atカランがない場合は通常の物理削除を実行	
+RETURN OLD;	
+END IF;	
+END;	
+$$;
+
+'
 
 -- テーブルのRLSを有効化
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -140,9 +189,9 @@ CREATE POLICY "タグは管理者のみ削除可能" ON public.tags
   ));
 
 -- プロダクトテーブルのポリシー
--- 誰でも閲覧可能
+-- 誰でも閲覧可能（論理削除されていないもののみ）
 CREATE POLICY "プロダクトは誰でも閲覧可能" ON public.products
-  FOR SELECT USING (true);
+  FOR SELECT USING (deleted_at IS NULL);
 
 -- 認証済みユーザーは自分のプロダクトを作成可能
 CREATE POLICY "認証済みユーザーは自分のプロダクトを作成可能" ON public.products
@@ -151,11 +200,18 @@ CREATE POLICY "認証済みユーザーは自分のプロダクトを作成可�
 -- 自分のプロダクトまたは管理者のみ編集可能
 CREATE POLICY "自分のプロダクトまたは管理者のみ編集可能" ON public.products
   FOR UPDATE USING (
-    auth.uid() = user_id OR
+    (auth.uid() = user_id OR
     EXISTS (
       SELECT 1 FROM public.profiles
       WHERE profiles.id = auth.uid() AND profiles.is_admin = true
-    )
+    ))
+  )
+  WITH CHECK (
+    (auth.uid() = user_id OR
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.is_admin = true
+    ))
   );
 
 -- 自分のプロダクトまたは管理者のみ削除可能
@@ -210,6 +266,12 @@ CREATE POLICY "自分のお気に入りのみ作成可能" ON public.favorites
 -- 自分のお気に入りのみ削除可能
 CREATE POLICY "自分のお気に入りのみ削除可能" ON public.favorites
   FOR DELETE USING (auth.uid() = user_id);
+
+-- 論理削除用トリガーの設定（deleted_atカラムがあるテーブルのみ）
+CREATE TRIGGER soft_delete_trigger_products	
+BEFORE DELETE ON public.products	
+FOR EACH ROW	
+EXECUTE FUNCTION soft_delete();
 
 -- プロダクト画像用のバケットを作成
 INSERT INTO storage.buckets (id, name, public) 
